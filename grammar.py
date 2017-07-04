@@ -112,7 +112,7 @@ def p_expression_number(p):
     p[0] = p[1]
 
 def p_assign(p):
-  	'''assign:  NAME EQUALS NUMBER
+  	'''assign :  NAME EQUALS NUMBER
               |  NAME EQUALS expression''' 
 
 def p_factor_expression(p):
@@ -139,4 +139,3 @@ parser=yacc.yacc()  #build the parser
 
 
 print(parser.parse(open(filename).read()))
-

@@ -4,9 +4,7 @@ sys.path.append("../..")
 
 from ply import *
 
-'''if len(sys.argv) <2:
-    print("usage : yply.py [-nocode] inputfile")
-    raise SystemExit'''
+
 
 
 '''
@@ -46,6 +44,8 @@ t_ignore 		= ' \t'
 
 t_RPAREN		= r'\('
 t_LPAREN		= r'\)'
+
+
 t_RCOLC			= r'\['
 t_LCOLC			= r'\]'
 t_RBRACE		= r'\{'
@@ -140,13 +140,4 @@ def t_ccode_comment(t):
 lex.lex()
 
 
-'''if len(sys.argv) == 2:
-    lex.input(open(sys.argv[1]).read())
 
-
-while  True:
-	tok = lex.token()
-	if not tok: break
-
-	print (tok)
-	print ("\n")'''
