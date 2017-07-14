@@ -25,6 +25,7 @@ else:
 # Parsing rules
 
 precedence = (
+    ('left','LPAREN','RPAREN'),
     ('left','AND','OR'),
     ('left','MAIOR','MENOR', 'MAIOREQUALS', 'MENOREQUALS', 'PLUSPLUS', 'DIFF'),
     ('left','PLUS','MINUS'),
@@ -113,14 +114,16 @@ def p_expression_number(p):
 
 def p_assign(p):
   	'''assign :  NAME EQUALS NUMBER
-              |  NAME EQUALS expression''' 
+              |  NAME EQUALS expression
+    '''
+    vars[p[1]] = p[3]
+#    p[0] = ('ASSIGN',p[1],p[3])
 
 def p_factor_expression(p):
     'expression : LPAREN expression RPAREN'
     p[0] = p[2]
 
-def p_error(p):
-    pass
+
 
 def p_statement_assign(t):
     'statement : NAME EQUALS expression'
@@ -131,8 +134,13 @@ def p_statement_expr(t):
     print(t[1])
 
 def p_statement_if(t):
-    'statement : IF LPAREN expression RPAREN  statement'  
+    'statement : IF LPAREN expression RPAREN  statement'
     pass
+
+def p_statement_print(p):
+     'statement : PRINT LPAREN expression RPAREN'
+     print (p[3])
+
 
 
 parser=yacc.yacc()  #build the parser

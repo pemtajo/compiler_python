@@ -23,17 +23,18 @@ reserved = {
 	'true'	:	'TRUE',
 	'void'	:	'VOID',
 	'while'	:	'WHILE',
-	'proc'	:	'PROCEDURE',	
-	'func'	:	'FUNCTION'
-
+	'proc'	:	'PROCEDURE',
+	'func'	:	'FUNCTION',
+	'print' :	'PRINT'
 }
 
 
 
 
 tokens = ['NAME', 'NUMBER', 'PLUS', 'MINUS', 'TIMES', 'DIVIDE', 'EQUALS',
- 'RPAREN', 'LPAREN', 'RCOLC', 'LCOLC', 'RBRACE', 'LBRACE', 'COMMA', 'SEMICOLON', 'OR', 'AND', 'EXPLAMATION', 'INTERROGATION', 'COLON', 
- 'PLUSPLUS', 'DIFF', 'MENOR', 'MAIOR', 'MENOREQUALS', 'MAIOREQUALS', 'SUMEQUALS', 'MINUSEQUALS', 'TIMESEQUALS', 'DIVIDEEQUALS', 'MOD', 'ASPAS']+ list(reserved.values())
+ 'RPAREN', 'LPAREN', 'RCOLC', 'LCOLC', 'RBRACE', 'LBRACE', 'COMMA', 'SEMICOLON', 'OR', 'AND', 'EXPLAMATION', 'INTERROGATION', 'COLON',
+ 'PLUSPLUS', 'DIFF', 'MENOR', 'MAIOR', 'MENOREQUALS', 'MAIOREQUALS', 'SUMEQUALS', 'MINUSEQUALS', 'TIMESEQUALS', 'DIVIDEEQUALS', 'MOD', 'ASPAS'
+ ]+ list(reserved.values())
 
 
 '''
@@ -42,8 +43,8 @@ tokens e simbolos
 '''
 t_ignore 		= ' \t'
 
-t_RPAREN		= r'\('
-t_LPAREN		= r'\)'
+t_RPAREN		= r'\)'
+t_LPAREN		= r'\('
 
 
 t_RCOLC			= r'\['
@@ -98,7 +99,7 @@ t_STRING	= r'string'
 t_TRUE		= r'true'
 t_VOID		= r'void'
 t_WHILE		= r'while'
-t_PROCEDURE	= r'proc'	
+t_PROCEDURE	= r'proc'
 t_FUNCTION	= r'func'
 '''
 
@@ -138,6 +139,3 @@ def t_ccode_comment(t):
 
 
 lex.lex()
-
-
-
