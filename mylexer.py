@@ -17,6 +17,7 @@ reserved = {
 	'for'	:	'FOR',
 	'false'	:	'FALSE',
 	'if'	:	'IF',
+	'else'	:	'ELSE',
 	'int'	:	'INT',
 	'return':	'RETURN',
 	'string':	'STRING',

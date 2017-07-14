@@ -30,11 +30,10 @@ precedence = (
     ('left','MAIOR','MENOR', 'MAIOREQUALS', 'MENOREQUALS', 'PLUSPLUS', 'DIFF'),
     ('left','PLUS','MINUS'),
     ('left','TIMES','DIVIDE'),
-    ('right','UMINUS'),
+    ('right','UMINUS', 'NOT'),
     )
-
-# dictionary of names
-names = { }
+###############################################################
+#expressions
 
 def p_expression_logop(t):
     '''expression : expression MAIOR expression
@@ -76,18 +75,6 @@ def p_expression_bool(t):
     'expression : bool'
     t[0] = t[1]
 
-def p_true(t):
-    'bool : TRUE'
-    t[0] = True
-
-def p_false(t):
-    'bool : FALSE'
-    t[0] = False
-
-def p_error(t):
-    print("Syntax error at '%s'" % t.value)
-
-
 def p_binary_operators(p):
     '''expression : expression PLUS expression
                   | expression MINUS expression
@@ -103,45 +90,83 @@ def p_binary_operators(p):
     elif p[2] == '/':
         p[0] = p[1] / p[3]
 
+def p_ternary(p):
+    '''expression : expression INTERROGATION expression COLON expression
+    '''
+
 
 def p_expression_uminus(p):
     'expression : MINUS expression %prec UMINUS'
     p[0] = -p[2]
 
+def p_expression_not(p):
+    'expression : EXPLAMATION expression %prec NOT'
+    p[0] =  not p[2]
+
+def p_expression(p):
+    'expression : LPAREN expression RPAREN'
+    p[0] = p[2]
+
 def p_expression_number(p):
     'expression : NUMBER'
     p[0] = p[1]
 
+def p_true(t):
+    'bool : TRUE'
+    t[0] = True
+
+def p_false(t):
+    'bool : FALSE'
+    t[0] = False
+
+def p_error(t):
+    print("Syntax error at '%s'" % t.value)
+
+
+
+
 def p_assign(p):
-  	'''assign :  NAME EQUALS NUMBER
-              |  NAME EQUALS expression
+    '''assign :   NAME EQUALS expression
+              |   NAME MOD expression
+              |   NAME SUMEQUALS expression
+              |   NAME MINUSEQUALS expression
+              |   NAME TIMESEQUALS expression
+              |   NAME DIVIDEEQUALS expression
     '''
-    vars[p[1]] = p[3]
+#    vars[p[1]] = p[3]
 #    p[0] = ('ASSIGN',p[1],p[3])
 
-def p_factor_expression(p):
-    'expression : LPAREN expression RPAREN'
-    p[0] = p[2]
 
+
+#########################################################################
+#statements
 
 
 def p_statement_assign(t):
-    'statement : NAME EQUALS expression'
+    'statement : assign'
     names[t[1]] = t[3]
 
 def p_statement_expr(t):
     'statement : expression'
     print(t[1])
 
+
+#<ifStmt> => "if" '(' <exp> ')' '{' <block> '}'
+#          | "if" '(' <exp> ')' '{' <block> '}' "else" '{' <block> '}'
 def p_statement_if(t):
-    'statement : IF LPAREN expression RPAREN  statement'
+    '''statement : IF LPAREN expression RPAREN LBRACE RBRACE
+                | IF LPAREN expression RPAREN LBRACE block RBRACE ELSE LBRACE block RBRACE'''
     pass
 
 def p_statement_print(p):
      'statement : PRINT LPAREN expression RPAREN'
      print (p[3])
 
+##############################################################################
+#block
 
+def p_block(p):
+    '''block : statement'''
 
 parser=yacc.yacc()  #build the parser
 
