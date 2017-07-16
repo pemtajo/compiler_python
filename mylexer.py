@@ -48,10 +48,10 @@ t_RPAREN		= r'\)'
 t_LPAREN		= r'\('
 
 
-t_RCOLC			= r'\['
-t_LCOLC			= r'\]'
-t_RBRACE		= r'\{'
-t_LBRACE		= r'\}'
+t_RCOLC			= r'\]'
+t_LCOLC			= r'\['
+t_RBRACE		= r'\}'
+t_LBRACE		= r'\{'
 
 t_COMMA			= r','
 t_SEMICOLON		= r';'

@@ -47,6 +47,35 @@ def p_error(t):
     errors.unknownError(t)
 
 
+def p_declaration(p):
+    '''declaration : var_Declaration'''
+
+def p_var_declaration(p):
+    '''var_Declaration : type var_Especification SEMICOLON'''
+###############################################################
+#ERROS
+def p_var_declaration_error(p):
+    '''var_Declaration : type error SEMICOLON'''
+    errors.VarDecError(p)
+
+def p_var_declaration_error2(p):
+    '''var_Declaration : type var_Especification'''
+    errors.NoSemicolonError(p)
+
+
+###############################################################
+def p_var_especification(p):
+    '''var_Especification : NAME LCOLC NUMBER RCOLC
+                            | NAME ASSIGN expression
+                            | NAME '''
+                #| NAME LCOLC NUMBER RCOLC  ASSIGN LBRACE <literalSeq> RBRACE
+
+
+
+###############################################################
+
+
+
 def p_expression_logop(t):
     '''expression : expression MAIOR expression
                   | expression MENOR expression
@@ -67,17 +96,18 @@ def p_expression_logop(t):
     else: errors.unknownSignal(t)
 
 
-def p_expression_int(t):
-    'expression : INT'
+
+
+def p_expression_type(t):
+    'expression : type'
     t[0] = t[1]
 
-def p_expression_char(t):
-    'expression : STRING'
-    t[0] = t[1]
+def p_define_type(p):
+    '''type : INT
+            | STRING
+            | BOOL'''
 
-def p_expression_bool(t):
-    'expression : BOOL'
-    t[0] = t[1]
+
 
 def p_binary_operators(p):
     '''expression : expression PLUS expression

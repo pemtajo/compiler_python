@@ -8,4 +8,17 @@ def unknownSignal(t):
     print("Unknown Signal at '%s', in Line %d , Column %d!" % (t.value, t.lineno, t.lexpos))
 
 def unknownError(t):
-    print("Syntax error at '%s', in Line %d , Column %d" % (t.value, t.lineno, t.lexpos))
+    if t:
+         print("Syntax error at '%s', in Line %d , Column %d" % (t.value, t.lineno, t.lexpos))
+         # Just discard the token and tell the parser it's okay.
+         parser.errok()
+    else:
+         print("Syntax error at EOF")
+
+
+def VarDecError(t):
+    print("Declaration Variavel Error at '%s', in Line %d , Column %d" % (t.value, t.lineno, t.lexpos))
+
+
+def NoSemicolonError(t):
+    print("No Semicolon Error")
