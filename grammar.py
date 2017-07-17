@@ -3,8 +3,12 @@ import sys
 sys.path.append("../..")
 
 import ply.yacc as yacc
+import errors
 
 from mylexer import tokens
+
+
+
 
 
 if len(sys.argv) < 2:
@@ -22,25 +26,33 @@ else:
     filename = sys.argv[1]
 
 
+############################################################################
+
+
+############################################################################
+
 # Parsing rules
 
 precedence = (
     ('left','LPAREN','RPAREN'),
     ('left','AND','OR'),
-    ('left','MAIOR','MENOR', 'MAIOREQUALS', 'MENOREQUALS', 'PLUSPLUS', 'DIFF'),
+    ('left','MAIOR','MENOR', 'MAIOREQUALS', 'MENOREQUALS', 'EQUALS', 'DIFF'),
     ('left','PLUS','MINUS'),
     ('left','TIMES','DIVIDE'),
     ('right','UMINUS', 'NOT'),
     )
 ###############################################################
 #expressions
+def p_error(t):
+    errors.unknownError(t)
+
 
 def p_expression_logop(t):
     '''expression : expression MAIOR expression
                   | expression MENOR expression
                   | expression MAIOREQUALS expression
                   | expression MENOREQUALS expression
-                  | expression PLUSPLUS expression
+                  | expression EQUALS expression
                   | expression DIFF expression
                   | expression AND expression
                   | expression OR expression'''
@@ -52,27 +64,19 @@ def p_expression_logop(t):
     elif t[2] == '!=': t[0] = t[1] != t[3]
     elif t[2] == '&&': t[0] = t[1] and t[3]
     elif t[2] == '||': t[0] = t[1] or t[3]
+    else: errors.unknownSignal(t)
 
 
 def p_expression_int(t):
     'expression : INT'
     t[0] = t[1]
 
-
 def p_expression_char(t):
     'expression : STRING'
     t[0] = t[1]
 
-def p_expression_name(t):
-    'expression : NAME'
-    try:
-        t[0] = names[t[1]]
-    except LookupError:
-        print("Undefined name '%s'" % t[1])
-        t[0] = 0
-
 def p_expression_bool(t):
-    'expression : bool'
+    'expression : BOOL'
     t[0] = t[1]
 
 def p_binary_operators(p):
@@ -89,10 +93,12 @@ def p_binary_operators(p):
         p[0] = p[1] * p[3]
     elif p[2] == '/':
         p[0] = p[1] / p[3]
+    else: errors.unknownSignal(t)
 
 def p_ternary(p):
     '''expression : expression INTERROGATION expression COLON expression
     '''
+
 
 
 def p_expression_uminus(p):
@@ -111,40 +117,59 @@ def p_expression_number(p):
     'expression : NUMBER'
     p[0] = p[1]
 
-def p_true(t):
+#see later
+'''def p_true(t):
     'bool : TRUE'
-    t[0] = True
+    t[0] = "true"
 
 def p_false(t):
     'bool : FALSE'
-    t[0] = False
+    t[0] = "false"'''
 
-def p_error(t):
-    print("Syntax error at '%s'" % t.value)
 
 
 
 
 def p_assign(p):
-    '''assign :   NAME EQUALS expression
-              |   NAME MOD expression
-              |   NAME SUMEQUALS expression
-              |   NAME MINUSEQUALS expression
-              |   NAME TIMESEQUALS expression
-              |   NAME DIVIDEEQUALS expression
+    '''assignment :   NAME ASSIGN expression
+                  |   NAME MOD expression
+                  |   NAME SUMEQUALS expression
+                  |   NAME MINUSEQUALS expression
+                  |   NAME TIMESEQUALS expression
+                  |   NAME DIVIDEEQUALS expression
     '''
+    if   p[2] ==  '=':
+        vars[p[1]] = p[3]
+    elif p[2] == '%=':
+        vars[p[1]] = p[1]/p[3]
+    elif p[2] == '+=':
+        vars[p[1]] = p[1]+p[3]
+    elif p[2] == '-=':
+        vars[p[1]] = p[1]-p[3]
+    elif p[2] == '*=':
+        vars[p[1]] = p[1]*p[3]
+    elif p[2] == '/=':
+        vars[p[1]] = p[1]/p[3]
+    else: errors.unknownSignal(t)
+
 #    vars[p[1]] = p[3]
 #    p[0] = ('ASSIGN',p[1],p[3])
 
-
+def p_expression_name(t):
+    'expression : NAME'
+    '''try:
+        #t[0] = names[t[1]]
+    except LookupError:
+        print("Undefined name '%s'" % t[1])
+        t[0] = 0'''
 
 #########################################################################
 #statements
 
 
 def p_statement_assign(t):
-    'statement : assign'
-    names[t[1]] = t[3]
+    'statement : assignment'
+
 
 def p_statement_expr(t):
     'statement : expression'
@@ -154,7 +179,7 @@ def p_statement_expr(t):
 #<ifStmt> => "if" '(' <exp> ')' '{' <block> '}'
 #          | "if" '(' <exp> ')' '{' <block> '}' "else" '{' <block> '}'
 def p_statement_if(t):
-    '''statement : IF LPAREN expression RPAREN LBRACE RBRACE
+    '''statement : IF LPAREN expression RPAREN LBRACE block RBRACE
                 | IF LPAREN expression RPAREN LBRACE block RBRACE ELSE LBRACE block RBRACE'''
     pass
 

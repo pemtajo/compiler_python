@@ -32,9 +32,9 @@ reserved = {
 
 
 
-tokens = ['NAME', 'NUMBER', 'PLUS', 'MINUS', 'TIMES', 'DIVIDE', 'EQUALS',
+tokens = ['NAME', 'NUMBER', 'PLUS', 'MINUS', 'TIMES', 'DIVIDE', 'ASSIGN',
  'RPAREN', 'LPAREN', 'RCOLC', 'LCOLC', 'RBRACE', 'LBRACE', 'COMMA', 'SEMICOLON', 'OR', 'AND', 'EXPLAMATION', 'INTERROGATION', 'COLON',
- 'PLUSPLUS', 'DIFF', 'MENOR', 'MAIOR', 'MENOREQUALS', 'MAIOREQUALS', 'SUMEQUALS', 'MINUSEQUALS', 'TIMESEQUALS', 'DIVIDEEQUALS', 'MOD', 'ASPAS'
+ 'EQUALS', 'DIFF', 'MENOR', 'MAIOR', 'MENOREQUALS', 'MAIOREQUALS', 'SUMEQUALS', 'MINUSEQUALS', 'TIMESEQUALS', 'DIVIDEEQUALS', 'MOD', 'ASPAS'
  ]+ list(reserved.values())
 
 
@@ -62,7 +62,7 @@ t_INTERROGATION = r'\?'
 t_COLON 		= r':'
 
 
-t_PLUSPLUS		= r'=='
+t_EQUALS		= r'=='
 t_DIFF			= r'!='
 t_MENOR			= r'<'
 t_MAIOR			= r'>'
@@ -75,18 +75,13 @@ t_TIMESEQUALS 	= r'\*='
 t_DIVIDEEQUALS	= r'/='
 t_MOD			= r'%='
 
-
-
 t_PLUS   		= r'\+'
 t_MINUS			= r'-'
 t_TIMES			= r'\*'
 t_DIVIDE		= r'/'
-t_EQUALS		= r'='
+t_ASSIGN		= r'='
 
 t_ASPAS			= r'\"'
-
-
-
 
 '''
 t_BOOL 		= r'bool'
@@ -108,8 +103,10 @@ t_FUNCTION	= r'func'
 
 def t_NAME(t):
     r'[a-zA-Z_][a-zA-Z_0-9]*'
-    t.type = reserved.get(t.value,'NAME')    # Check for reserved words
+    if t.value in reserved:# Check for reserved words
+        t.type = reserved[ t.value ]
     return t
+
 
 def t_NUMBER(t):
 	r'\d+'
