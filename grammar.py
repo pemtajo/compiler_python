@@ -128,9 +128,7 @@ def p_binary_operators(p):
 def p_ternary(p):
     '''expression : expression INTERROGATION expression COLON expression
     '''
-
-
-
+    
 def p_expression_uminus(p):
     'expression : MINUS expression %prec UMINUS'
     p[0] = -p[2]
@@ -185,8 +183,8 @@ def p_assign(p):
 #    vars[p[1]] = p[3]
 #    p[0] = ('ASSIGN',p[1],p[3])
 
-def p_expression_name(t):
-    'expression : NAME'
+#def p_expression_name(t):
+#    'expression : NAME'
     '''try:
         #t[0] = names[t[1]]
     except LookupError:
@@ -221,7 +219,8 @@ def p_statement_print(p):
 #block
 
 def p_block(p):
-    '''block : statement'''
+    '''block : statement block
+            | statement'''
 
 parser=yacc.yacc()  #build the parser
 
