@@ -11,7 +11,6 @@ def unknownError(t):
     if t:
          print("Syntax error at '%s', in Line %d , Column %d" % (t.value, t.lineno, t.lexpos))
          # Just discard the token and tell the parser it's okay.
-         parser.errok()
     else:
          print("Syntax error at EOF")
 
@@ -21,4 +20,4 @@ def VarDecError(t):
 
 
 def NoSemicolonError(t):
-    print("No Semicolon Error")
+    print("No Semicolon Error , in Line %d , Column %d" % (t.lineno(0), t.lexpos(0)))

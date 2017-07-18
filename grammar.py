@@ -12,7 +12,7 @@ from mylexer import tokens
 
 
 if len(sys.argv) < 2:
-    print ("usage : yply.py [-nocode] inputfile")
+    print ("usage : grammar.py [-nocode] inputfile")
     raise SystemExit
 
 if len(sys.argv) == 3:
@@ -33,6 +33,7 @@ else:
 
 # Parsing rules
 
+
 precedence = (
     ('left','LPAREN','RPAREN'),
     ('left','AND','OR'),
@@ -46,16 +47,24 @@ precedence = (
 def p_error(t):
     errors.unknownError(t)
 
+def p_define_end_of_instruction(p):
+    'end : SEMICOLON'
+
+def p_expression_type(t):
+    'expression : type'
+    t[0] = t[1]
+
+
 
 def p_declaration(p):
     '''declaration : var_Declaration'''
 
 def p_var_declaration(p):
-    '''var_Declaration : type var_Especification SEMICOLON'''
+    '''var_Declaration : type var_Especification end'''
 ###############################################################
 #ERROS
 def p_var_declaration_error(p):
-    '''var_Declaration : type error SEMICOLON'''
+    '''var_Declaration : type error end'''
     errors.VarDecError(p)
 
 def p_var_declaration_error2(p):
@@ -69,6 +78,8 @@ def p_var_especification(p):
                             | NAME ASSIGN expression
                             | NAME '''
                 #| NAME LCOLC NUMBER RCOLC  ASSIGN LBRACE <literalSeq> RBRACE
+
+
 
 
 
@@ -98,14 +109,18 @@ def p_expression_logop(t):
 
 
 
-def p_expression_type(t):
-    'expression : type'
-    t[0] = t[1]
-
 def p_define_type(p):
     '''type : INT
             | STRING
             | BOOL'''
+
+
+def p_define_parametro(p):
+    '''parametro : type NAME
+                | type NAME LCOLC RCOLC'''
+    p[0] = p[1]
+
+
 
 
 
@@ -128,7 +143,7 @@ def p_binary_operators(p):
 def p_ternary(p):
     '''expression : expression INTERROGATION expression COLON expression
     '''
-    
+
 def p_expression_uminus(p):
     'expression : MINUS expression %prec UMINUS'
     p[0] = -p[2]
@@ -193,27 +208,50 @@ def p_assign(p):
 
 #########################################################################
 #statements
-
+'''<stmt> =>
+        | <readStmt>
+        | <writeStmt>'''
 
 def p_statement_assign(t):
-    'statement : assignment'
+    '''statement    : if_statement
+                    | while_statement
+                    | for_statement
+                    | break_statement
+                    | return_statement
+                    | assignment end
+                    | subCall_statement end
+    '''
 
 
-def p_statement_expr(t):
-    'statement : expression'
-    print(t[1])
 
 
-#<ifStmt> => "if" '(' <exp> ')' '{' <block> '}'
-#          | "if" '(' <exp> ')' '{' <block> '}' "else" '{' <block> '}'
 def p_statement_if(t):
-    '''statement : IF LPAREN expression RPAREN LBRACE block RBRACE
+    '''if_statement : IF LPAREN expression RPAREN LBRACE block RBRACE
                 | IF LPAREN expression RPAREN LBRACE block RBRACE ELSE LBRACE block RBRACE'''
-    pass
 
-def p_statement_print(p):
-     'statement : PRINT LPAREN expression RPAREN'
-     print (p[3])
+def p_statement_while(t):
+    'while_statement : WHILE LPAREN expression RPAREN LBRACE block RBRACE'
+
+def p_statement_for(t):
+    'for_statement  :  FOR LPAREN assignment SEMICOLON expression SEMICOLON assignment RPAREN LBRACE block RBRACE'
+
+
+def p_statement_break(t):
+    'break_statement    :   BREAK end'
+
+def p_statement_return(t):
+    '''return_statement : RETURN end
+                        | RETURN expression end'''
+
+def p_statement_subCall(t):
+    '''subCall_statement : NAME LPAREN RPAREN'''
+
+
+def p_variavel(t):
+    '''variavel : NAME
+                | NAME LCOLC expression RCOLC'''
+
+
 
 ##############################################################################
 #block
