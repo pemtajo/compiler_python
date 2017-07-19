@@ -22,17 +22,15 @@ reserved = {
 	'return':	'RETURN',
 	'string':	'STRING',
 	'true'	:	'TRUE',
-	'void'	:	'VOID',
 	'while'	:	'WHILE',
-	'proc'	:	'PROCEDURE',
-	'func'	:	'FUNCTION',
-	'print' :	'PRINT'
+	'write' :	'WRITE',
+	'read' :	'READ'
 }
 
 
 
 
-tokens = ['NAME', 'NUMBER', 'PLUS', 'MINUS', 'TIMES', 'DIVIDE', 'ASSIGN',
+tokens = ['NAME', 'NUMBER', 'NORMALSTRING', 'PLUS', 'MINUS', 'TIMES', 'DIVIDE', 'ASSIGN',
  'RPAREN', 'LPAREN', 'RCOLC', 'LCOLC', 'RBRACE', 'LBRACE', 'COMMA', 'SEMICOLON', 'OR', 'AND', 'EXPLAMATION', 'INTERROGATION', 'COLON',
  'EQUALS', 'DIFF', 'MENOR', 'MAIOR', 'MENOREQUALS', 'MAIOREQUALS', 'SUMEQUALS', 'MINUSEQUALS', 'TIMESEQUALS', 'DIVIDEEQUALS', 'MOD', 'ASPAS'
  ]+ list(reserved.values())
@@ -105,11 +103,18 @@ def t_NAME(t):
     r'[a-zA-Z_][a-zA-Z_0-9]*'
     if t.value in reserved:# Check for reserved words
         t.type = reserved[ t.value ]
+#	print(t)
     return t
 
 
+def t_NORMALSTRING(t):
+	r'\"([^\\\n]|(\\.))*?\"'
+#	print(t)
+	return t
+
 def t_NUMBER(t):
 	r'\d+'
+#	print(t)
 	t.value = int(t.value)
 	return t
 

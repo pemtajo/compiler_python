@@ -21,3 +21,9 @@ def VarDecError(t):
 
 def NoSemicolonError(t):
     print("No Semicolon Error , in Line %d , Column %d" % (t.lineno(0), t.lexpos(0)))
+
+def NoTypeError(t):
+    print("No type defined Error , in Line %d , Column %d" % (t.lineno(0), t.lexpos(0)))
+
+def print_all(t):
+    print(" ")
