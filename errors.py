@@ -24,6 +24,3 @@ def NoSemicolonError(t):
 
 def NoTypeError(t):
     print("No type defined Error , in Line %d , Column %d" % (t.lineno(0), t.lexpos(0)))
-
-def print_all(t):
-    print(" ")

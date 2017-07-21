@@ -6,24 +6,14 @@ import ply.yacc as yacc
 import errors
 
 from mylexer import tokens
+import mylexer
 
 
-
-
-
-if len(sys.argv) < 2:
-    print ("usage : grammar.py [-nocode] inputfile")
+if "cmm.py" not in sys.argv[0]:
+    print ("usage : cmm.py inputfile")
     raise SystemExit
 
-if len(sys.argv) == 3:
-    if sys.argv[1] == '-nocode':
-         mylexer.emit_code = 0
-    else:
-         print ("Unknown option '%s'" % sys.argv[1])
-         raise SystemExit
-    filename = sys.argv[2]
-else:
-    filename = sys.argv[1]
+
 
 
 ############################################################################
@@ -315,7 +305,3 @@ def p_error(t):
 
 
 parser=yacc.yacc(start='program', debug=True)  #build the parser
-
-arquive = open(filename).read()
-
-parser.parse(arquive)
