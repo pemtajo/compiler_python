@@ -32,7 +32,7 @@ reserved = {
 
 tokens = ['NAME', 'NUMBER', 'NORMALSTRING', 'PLUS', 'MINUS', 'TIMES', 'DIVIDE', 'ASSIGN',
  'RPAREN', 'LPAREN', 'RCOLC', 'LCOLC', 'RBRACE', 'LBRACE', 'COMMA', 'SEMICOLON', 'OR', 'AND', 'EXPLAMATION', 'INTERROGATION', 'COLON',
- 'EQUALS', 'DIFF', 'MENOR', 'MAIOR', 'MENOREQUALS', 'MAIOREQUALS', 'SUMEQUALS', 'MINUSEQUALS', 'TIMESEQUALS', 'DIVIDEEQUALS', 'MOD', 'ASPAS'
+ 'EQUALS', 'DIFF', 'MENOR', 'MAIOR', 'MENOREQUALS', 'MAIOREQUALS', 'SUMEQUALS', 'MINUSEQUALS', 'TIMESEQUALS', 'DIVIDEEQUALS', 'MOD'
  ]+ list(reserved.values())
 
 
@@ -79,7 +79,7 @@ t_TIMES			= r'\*'
 t_DIVIDE		= r'/'
 t_ASSIGN		= r'='
 
-t_ASPAS			= r'\"'
+#t_ASPAS			= r'\"'
 
 '''
 t_BOOL 		= r'bool'
