@@ -6,24 +6,14 @@ import ply.yacc as yacc
 import errors
 
 from mylexer import tokens
+import mylexer
 
 
-
-
-
-if len(sys.argv) < 2:
-    print ("usage : grammar.py [-nocode] inputfile")
+if "cmm.py" not in sys.argv[0]:
+    print ("usage : cmm.py inputfile")
     raise SystemExit
 
-if len(sys.argv) == 3:
-    if sys.argv[1] == '-nocode':
-         mylexer.emit_code = 0
-    else:
-         print ("Unknown option '%s'" % sys.argv[1])
-         raise SystemExit
-    filename = sys.argv[2]
-else:
-    filename = sys.argv[1]
+
 
 
 ############################################################################
@@ -75,35 +65,24 @@ def p_variavel(t):
     '''variavel : NAME
                 | NAME LCOLC expression RCOLC'''
 
-###############################################################
-#errors
 
-
-def p_var_declaration_error(p):
-    '''var_Declaration : type error end'''
-    errors.VarDecError(p)
-
-def p_var_declaration_error2(p):
-    '''var_Declaration : type var_Especification'''
-    errors.NoSemicolonError(p)
-
-def p_var_declaration_error3(p):
-    '''var_Declaration : empty var_Especification end'''
-    errors.NoTypeError(p)
-
-def p_error(t):
-    errors.unknownError(t)
-
-
+#################################################################
+# sequence = (example)+
+# list = (example)*
+#
+#
+#
+#
 #################################################################
 
 def p_program(t):
     'program : sequence_declaration'
 
 def p_declaration(p):
-    '''declaration : var_Declaration
-                    | procedure
-                    | function'''
+    '''declaration  : procedure
+                    | function
+                    | var_Declaration
+                    '''
 
 def p_sequence_declaration(t):
     '''sequence_declaration : declaration sequence_declaration
@@ -117,8 +96,8 @@ def p_list_var_declaration(p):
                             | empty'''
 
 def p_var_especification(p):
-    '''var_Especification : NAME LCOLC NUMBER RCOLC
-                            | NAME ASSIGN literal
+    '''var_Especification   : NAME LCOLC NUMBER RCOLC
+                            | NAME ASSIGN expression
                             | NAME
                             | NAME LCOLC NUMBER RCOLC ASSIGN LBRACE sequence_literal RBRACE'''
 
@@ -141,11 +120,10 @@ def p_sequence_parametro(t):
 
 def p_procedure(t):
     '''procedure : NAME LPAREN list_parametro RPAREN LBRACE block RBRACE'''
-    errors.print_all("Procedure")
+
 
 def p_function(t):
     '''function : type NAME LPAREN list_parametro RPAREN LBRACE block RBRACE'''
-    errors.print_all("function")
 
 ################################################################################
 #expression
@@ -211,20 +189,16 @@ def p_binary_operators(p):
         p[0] = p[1] / p[3]
     else: errors.unknownSignal(t)
 
+def p_define_expression_subcall(t):
+    'expression : subCall_statement end'
 
+def p_list_expression(t):
+    '''list_expression : sequence_expression
+                        | empty'''
 
-#see later
-'''def p_true(t):
-    'bool : TRUE'
-    t[0] = "true"
-
-def p_false(t):
-    'bool : FALSE'
-    t[0] = "false"'''
-
-
-
-
+def p_sequence_expression(t):
+    '''sequence_expression : expression COMMA list_expression
+                            | expression'''
 
 def p_assign(p):
     '''assignment :   variavel ASSIGN expression
@@ -289,7 +263,7 @@ def p_statement_return(t):
                         | RETURN expression end'''
 
 def p_statement_subCall(t):
-    '''subCall_statement : NAME LPAREN RPAREN'''
+    '''subCall_statement : NAME LPAREN list_expression RPAREN'''
 
 ################################################################################
 #I/O
@@ -309,23 +283,25 @@ def p_block(p):
     '''block : list_var_Declaration list_statement'''
 
 
-
-def p_list_expression(t):
-    '''list_expression : sequence_expression
-                        | empty'''
-
-def p_sequence_expression(t):
-    '''sequence_expression : expression COMMA list_expression
-                            | expression'''
+###############################################################
+#errors
 
 
+'''def p_var_declaration_error(p):
+    'var_Declaration : type error end'
+    errors.VarDecError(p)
 
+def p_var_declaration_error2(p):
+    'var_Declaration : type var_Especification'
+    errors.NoSemicolonError(p)
 
+def p_var_declaration_error3(p):
+    'var_Declaration : empty var_Especification end'
+    errors.NoTypeError(p)'''
 
+def p_error(t):
+    parser.errok()
+    errors.unknownError(t)
 
 
 parser=yacc.yacc(start='program', debug=True)  #build the parser
-
-arquive = open(filename).read()
-
-parser.parse(arquive)
