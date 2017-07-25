@@ -21,6 +21,8 @@ else:
     filename = sys.argv[1]
 
 
+
+
 arquive = open(filename).read()
 
 grammar.parser.parse(arquive)
