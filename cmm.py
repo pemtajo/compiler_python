@@ -19,12 +19,6 @@ if len(sys.argv) == 3:
 else:
     filename = sys.argv[1]
 
-<<<<<<< HEAD
-=======
-
-
-
->>>>>>> d087cfaa71aa7b5cad754cafdfcf12879890d159
 arquive = open(filename).read()
 
 grammar.parser.parse(arquive)
