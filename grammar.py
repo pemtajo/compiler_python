@@ -4,8 +4,8 @@ sys.path.append("../..")
 
 import ply.yacc as yacc
 import errors
-import variables
-
+import declarations
+from declarations import *
 from mylexer import tokens
 import mylexer
 
@@ -15,6 +15,7 @@ if "cmm" not in sys.argv[0]:
 
 ############################################################################
 
+escopo = Escopo()
 
 
 ############################################################################
@@ -88,7 +89,7 @@ def p_declaration(t):
 
 def p_var_declaration(t):
     '''var_Declaration : type sequence_var_Especification end'''
-    variables.add(t[1], t[2])
+    escopo.addVariable(t[2][0], t[1], t[2][1])
     t[0]=[t[1], t[2]]
 
 def p_list_var_declaration(p):
@@ -102,7 +103,7 @@ def p_var_especification(t):
                             | NAME LCOLC NUMBER RCOLC ASSIGN LBRACE sequence_literal RBRACE'''
 
     if(len(t)==2):
-        t[0]=[t[1], '']
+        t[0]=[t[1], None]
     elif(len(t)==4):
         t[0]=[t[1], t[3]]
 
@@ -164,7 +165,7 @@ def p_define_expression_literal(t):
 
 def p_define_expression_var(t):
     'expression : variavel'
-    t[0]=variables.show(t[1])
+    t[0]=escopo.show(t[1])
 
 def p_expression_logop(t):
     '''expression : expression MAIOR expression
@@ -222,17 +223,17 @@ def p_assign(p):
                   |   variavel DIVIDEEQUALS expression
     '''
     if  p[2] ==  '=':
-        variables.change(p[1], p[3])
+        escopo.change(p[1], p[3])
     elif p[2] == '%=':
-        variables.change(p[1], variables.show(p[1]) /p[3])
+        escopo.change(p[1], escopo.show(p[1]) /p[3])
     elif p[2] == '+=':
-        variables.change(p[1], variables.show(p[1]) +p[3])
+        escopo.change(p[1], escopo.show(p[1]) +p[3])
     elif p[2] == '-=':
-        variables.change(p[1], variables.show(p[1])-p[3])
+        escopo.change(p[1], escopo.show(p[1])-p[3])
     elif p[2] == '*=':
-        variables.change(p[1], variables.show(p[1]) *p[3])
+        escopo.change(p[1], escopo.show(p[1]) *p[3])
     elif p[2] == '/=':
-        variables.change(p[1], variables.show(p[1])/p[3])
+        escopo.change(p[1], escopo.show(p[1])/p[3])
     else: errors.unknownSignal(t)
 
 
@@ -301,7 +302,7 @@ def p_statement_read(t):
 
 def p_block(t):
     '''block : list_var_Declaration list_statement'''
-    
+
 
 ###############################################################
 #errors

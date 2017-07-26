@@ -24,3 +24,6 @@ def NoSemicolonError(t):
 
 def NoTypeError(t):
     print("No type defined Error , in Line %d , Column %d" % (t.lineno(0), t.lexpos(0)))
+
+def SameNameError(t):
+    print("Same Name Variavel Error at '%s', in Line %d , Column %d" % (t.value, t.lineno, t.lexpos))

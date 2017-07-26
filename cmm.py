@@ -23,4 +23,4 @@ arquive = open(filename).read()
 
 grammar.parser.parse(arquive)
 
-print(grammar.variables.names)          # Show parser object
+print(grammar.escopo.all())          # Show parser object

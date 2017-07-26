@@ -141,6 +141,8 @@ def t_ccode_comment(t):
     r'(/\*(.|\n)*?\*/)|(//.*)'
     pass
 
+if __name__ == '__main__':
+     lex.runmain()
 
 
 lex.lex()
