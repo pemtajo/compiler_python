@@ -70,7 +70,30 @@ class Variable(Declaration):
     def __repr__(self):
         return "["+self.name+ "," + self.type + "," + str(self.value)+"]"
 
-class Function(object):
+class Function(Declaration):
     """docstring for Function."""
-    def __init__(self):
+
+    def __init__(self, name, type, parametros):
         super(Function, self).__init__()
+        self.name =name
+        self.type = type
+        self.parametros =parametros
+
+    def __str__(self):
+        return self.name+ " " + self.type + " " + str(self.parametros)
+
+    def __repr__(self):
+        return "["+self.name+ "," + self.type + "," + str(self.parametros)+"]"
+
+class Procedure(Declaration):
+    """docstring for Procedure."""
+    def __init__(self, name, parametros):
+        super(Procedure, self).__init__()
+        self.name =name
+        self.parametros =parametros
+
+    def __str__(self):
+        return self.name+ " " + str(self.parametros)
+
+    def __repr__(self):
+        return "["+self.name+ "," + str(self.parametros)+"]"
