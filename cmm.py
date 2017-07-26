@@ -5,9 +5,8 @@ sys.path.append("../..")
 import grammar
 import errors
 
-
 if len(sys.argv) < 2:
-    print ("usage : cmm.py inputfile")
+    print ("usage : cmm inputfile")
     raise SystemExit
 
 if len(sys.argv) == 3:
@@ -20,9 +19,8 @@ if len(sys.argv) == 3:
 else:
     filename = sys.argv[1]
 
-
 arquive = open(filename).read()
 
 grammar.parser.parse(arquive)
 
-print(grammar.parser)          # Show parser object
+print(grammar.variables.names)          # Show parser object

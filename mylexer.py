@@ -4,8 +4,8 @@ sys.path.append("../..")
 
 from ply import *
 
-if "cmm.py" not in sys.argv[0]:
-    print ("usage : cmm.py inputfile")
+if "cmm" not in sys.argv[0]:
+    print ("usage : cmm inputfile")
     raise SystemExit
 
 '''

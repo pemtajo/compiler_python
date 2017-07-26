@@ -4,26 +4,22 @@ sys.path.append("../..")
 
 import ply.yacc as yacc
 import errors
+import variables
 
 from mylexer import tokens
 import mylexer
 
-
-if "cmm.py" not in sys.argv[0]:
-    print ("usage : cmm.py inputfile")
+if "cmm" not in sys.argv[0]:
+    print ("usage : cmm inputfile")
     raise SystemExit
 
-
-
-
 ############################################################################
+
 
 
 ############################################################################
 
 # Parsing rules
-
-
 precedence = (
     ('left','LPAREN','RPAREN'),
     ('left','AND','OR'),
@@ -32,6 +28,8 @@ precedence = (
     ('left','TIMES','DIVIDE'),
     ('right','UMINUS', 'NOT', 'TERNARY'),
     )
+
+
 
 
 #################################################################
@@ -53,60 +51,77 @@ def p_literal(t):
     t[0]=t[1]
 
 def p_sequence_literal(t):
-    '''sequence_literal : literal sequence_literal
+    '''sequence_literal : literal COMMA sequence_literal
                         | literal'''
 
-def p_define_type(p):
+
+def p_define_type(t):
     '''type : INT
             | STRING
             | BOOL'''
+    t[0]=t[1]
 
 def p_variavel(t):
     '''variavel : NAME
                 | NAME LCOLC expression RCOLC'''
-
+    t[0] = t[1]
 
 #################################################################
 # sequence = (example)+
 # list = (example)*
-#
-#
-#
 #
 #################################################################
 
 def p_program(t):
     'program : sequence_declaration'
 
-def p_declaration(p):
-    '''declaration  : procedure
-                    | function
-                    | var_Declaration
-                    '''
-
 def p_sequence_declaration(t):
     '''sequence_declaration : declaration sequence_declaration
                             | declaration'''
 
-def p_var_declaration(p):
-    '''var_Declaration : type var_Especification end'''
+def p_declaration(t):
+    '''declaration  : procedure
+                    | function
+                    | var_Declaration
+                    '''
+    t[0]=t[1]
+
+def p_var_declaration(t):
+    '''var_Declaration : type sequence_var_Especification end'''
+    variables.add(t[1], t[2])
+    t[0]=[t[1], t[2]]
 
 def p_list_var_declaration(p):
     '''list_var_Declaration : var_Declaration list_var_Declaration
                             | empty'''
 
-def p_var_especification(p):
+def p_var_especification(t):
     '''var_Especification   : NAME LCOLC NUMBER RCOLC
                             | NAME ASSIGN expression
                             | NAME
                             | NAME LCOLC NUMBER RCOLC ASSIGN LBRACE sequence_literal RBRACE'''
 
+    if(len(t)==2):
+        t[0]=[t[1], '']
+    elif(len(t)==4):
+        t[0]=[t[1], t[3]]
+
+
+def p_sequence_var_Especification(t):
+    '''sequence_var_Especification  : var_Especification COMMA sequence_var_Especification
+                                    | var_Especification
+    '''
+    if len(t)<4:
+         t[0] = t[1]
+    else:
+        t[0]=t[0]+t[1]
+
 ###############################################################
 
 
 def p_define_parametro(p):
-    '''parametro : type NAME
-                | type NAME LCOLC RCOLC'''
+    '''parametro    : type NAME
+                    | type NAME LCOLC RCOLC'''
 
 def p_list_parametro(t):
     '''list_parametro : sequence_parametro
@@ -117,10 +132,8 @@ def p_sequence_parametro(t):
                           | parametro'''
 
 
-
 def p_procedure(t):
     '''procedure : NAME LPAREN list_parametro RPAREN LBRACE block RBRACE'''
-
 
 def p_function(t):
     '''function : type NAME LPAREN list_parametro RPAREN LBRACE block RBRACE'''
@@ -151,7 +164,7 @@ def p_define_expression_literal(t):
 
 def p_define_expression_var(t):
     'expression : variavel'
-    t[0] = t[1]
+    t[0]=variables.show(t[1])
 
 def p_expression_logop(t):
     '''expression : expression MAIOR expression
@@ -208,18 +221,18 @@ def p_assign(p):
                   |   variavel TIMESEQUALS expression
                   |   variavel DIVIDEEQUALS expression
     '''
-    if   p[2] ==  '=':
-        p[1] = p[3]
+    if  p[2] ==  '=':
+        variables.change(p[1], p[3])
     elif p[2] == '%=':
-        p[1] = p[1]/p[3]
+        variables.change(p[1], variables.show(p[1]) /p[3])
     elif p[2] == '+=':
-        p[1] = p[1]+p[3]
+        variables.change(p[1], variables.show(p[1]) +p[3])
     elif p[2] == '-=':
-        p[1] = p[1]-p[3]
+        variables.change(p[1], variables.show(p[1])-p[3])
     elif p[2] == '*=':
-        p[1] = p[1]*p[3]
+        variables.change(p[1], variables.show(p[1]) *p[3])
     elif p[2] == '/=':
-        p[1] = p[1]/p[3]
+        variables.change(p[1], variables.show(p[1])/p[3])
     else: errors.unknownSignal(t)
 
 
@@ -246,7 +259,14 @@ def p_list_statement(t):
 
 def p_statement_if(t):
     '''if_statement : IF LPAREN expression RPAREN LBRACE block RBRACE
-                | IF LPAREN expression RPAREN LBRACE block RBRACE ELSE LBRACE block RBRACE'''
+                    | IF LPAREN expression RPAREN LBRACE block RBRACE ELSE LBRACE block RBRACE'''
+
+
+    if(t[3]):
+        t[0]=t[6]
+    else:
+        if(len(t)>10): #with else
+            t[0]=t[10]
 
 def p_statement_while(t):
     'while_statement : WHILE LPAREN expression RPAREN LBRACE block RBRACE'
@@ -279,9 +299,8 @@ def p_statement_read(t):
 ##############################################################################
 #block
 
-def p_block(p):
+def p_block(t):
     '''block : list_var_Declaration list_statement'''
-
 
 ###############################################################
 #errors
@@ -304,4 +323,4 @@ def p_error(t):
     errors.unknownError(t)
 
 
-parser=yacc.yacc(start='program', debug=True)  #build the parser
+parser=yacc.yacc(start='program')  #build the parser

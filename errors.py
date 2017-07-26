@@ -13,6 +13,7 @@ def unknownError(t):
          # Just discard the token and tell the parser it's okay.
     else:
          print("Syntax error at EOF")
+         raise SystemExit
 
 
 def VarDecError(t):
