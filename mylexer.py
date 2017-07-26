@@ -8,6 +8,7 @@ if "cmm" not in sys.argv[0]:
     print ("usage : cmm inputfile")
     raise SystemExit
 
+
 '''
 palavras reservadas
 bool break for false if int return string true void while

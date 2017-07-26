@@ -15,7 +15,6 @@ def unknownError(t):
          print("Syntax error at EOF")
          raise SystemExit
 
-
 def VarDecError(t):
     print("Declaration Variavel Error at '%s', in Line %d , Column %d" % (t.value, t.lineno, t.lexpos))
 
