@@ -120,25 +120,36 @@ def p_sequence_var_Especification(t):
 ###############################################################
 
 
-def p_define_parametro(p):
+def p_define_parametro(t):
     '''parametro    : type NAME
                     | type NAME LCOLC RCOLC'''
+    tmp={}
+    tmp[t[2]]=Variable(t[2], t[1], None)
+    t[0]= tmp
+
 
 def p_list_parametro(t):
     '''list_parametro : sequence_parametro
                       | empty'''
+    t[0]=t[1]
 
 def p_sequence_parametro(t):
     '''sequence_parametro : parametro COMMA sequence_parametro
                           | parametro'''
-
+    if(len(t)>2):
+        t[0]=[t[1], t[3]]
+    else:
+        t[0]=t[1]
 
 def p_procedure(t):
     '''procedure : NAME LPAREN list_parametro RPAREN LBRACE block RBRACE'''
+    escopo.addProcedure(t[1], t[3])
+    t[0]=[t[1], t[4]]
 
 def p_function(t):
     '''function : type NAME LPAREN list_parametro RPAREN LBRACE block RBRACE'''
-
+    escopo.addFunction(t[2], t[1], t[4])
+    t[0]=[t[1], t[2], t[4]]
 ################################################################################
 #expression
 
@@ -205,14 +216,17 @@ def p_binary_operators(p):
 
 def p_define_expression_subcall(t):
     'expression : subCall_statement end'
+    t[0]=t[1]
 
 def p_list_expression(t):
     '''list_expression : sequence_expression
                         | empty'''
+    t[0]=t[1]
 
 def p_sequence_expression(t):
-    '''sequence_expression : expression COMMA list_expression
+    '''sequence_expression : expression COMMA sequence_expression
                             | expression'''
+    t[0]= [t[1], t[3]] if (len(t)>2) else t[1]
 
 def p_assign(p):
     '''assignment :   variavel ASSIGN expression
@@ -222,6 +236,7 @@ def p_assign(p):
                   |   variavel TIMESEQUALS expression
                   |   variavel DIVIDEEQUALS expression
     '''
+
     if  p[2] ==  '=':
         escopo.change(p[1], p[3])
     elif p[2] == '%=':
@@ -235,7 +250,7 @@ def p_assign(p):
     elif p[2] == '/=':
         escopo.change(p[1], escopo.show(p[1])/p[3])
     else: errors.unknownSignal(t)
-
+    p[0]=escopo.show(p[1])
 
 #########################################################################
 #statements
@@ -252,7 +267,7 @@ def p_statement(t):
                     | write_statement end
                     | read_statement end
     '''
-
+    t[0]=t[1]
 
 def p_list_statement(t):
     '''list_statement : statement list_statement
@@ -289,12 +304,12 @@ def p_statement_subCall(t):
 ################################################################################
 #I/O
 def p_statement_write(t):
-    '''write_statement : WRITE LPAREN expression RPAREN'''
+    '''write_statement : WRITE  list_expression '''
     print (t[3])
 
 
 def p_statement_read(t):
-    '''read_statement : READ LPAREN variavel RPAREN'''
+    '''read_statement : READ variavel '''
     t[3].value = raw_input();
 
 ##############################################################################
@@ -302,7 +317,7 @@ def p_statement_read(t):
 
 def p_block(t):
     '''block : list_var_Declaration list_statement'''
-
+    t[0]=[t[1], t[2]]
 
 ###############################################################
 #errors
