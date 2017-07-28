@@ -21,6 +21,14 @@ class Escopo(object):
         v=Variable(name, type, value)
         self.add(name, v)
 
+    def addFunction(self, name, type, parametros):
+        f=Function(name, type, parametros)
+        self.add(name, f)
+
+    def addProcedure(self, name, parametros):
+        p=Procedure(name, parametros)
+        self.add(name, p)
+
     def show(self, d):
         return self.names[d].value
 
@@ -68,21 +76,30 @@ class Variable(Declaration):
         return self.name+ " " + self.type + " " + str(self.value)
 
     def __repr__(self):
-        return "["+self.name+ "," + self.type + "," + str(self.value)+"]"
+        return "|"+self.name+ "," + self.type + "," + str(self.value)+"|"
 
 class Function(Declaration):
     """docstring for Function."""
+<<<<<<< HEAD
 
     def __init__(self, name, type, parametros):
         super(Function, self).__init__()
         self.name =name
         self.type = type
         self.parametros =parametros
+=======
+    def __init__(self, name, type, parametros):
+        super(Function, self).__init__()
+        self.name = name
+        self.type = type
+        self.parametros = parametros
+>>>>>>> d4f8ee9f901ee2daa6e83dbc7fbcb5aae0b3f56d
 
     def __str__(self):
         return self.name+ " " + self.type + " " + str(self.parametros)
 
     def __repr__(self):
+<<<<<<< HEAD
         return "["+self.name+ "," + self.type + "," + str(self.parametros)+"]"
 
 class Procedure(Declaration):
@@ -97,3 +114,20 @@ class Procedure(Declaration):
 
     def __repr__(self):
         return "["+self.name+ "," + str(self.parametros)+"]"
+=======
+        return "|"+self.name+ "," + self.type + "," + str(self.parametros)+"|"
+
+class Procedure(object):
+    """docstring for Procedure."""
+    def __init__(self, name, parametros):
+        super(Procedure, self).__init__()
+        self.name = name
+        self.parametros=parametros
+
+
+    def __str__(self):
+        return self.name+ " " +str(self.parametros)
+
+    def __repr__(self):
+        return "|"+self.name+ "," + str(self.parametros)+"|"
+>>>>>>> d4f8ee9f901ee2daa6e83dbc7fbcb5aae0b3f56d
