@@ -5,13 +5,14 @@ sys.path.append("../..")
 import grammar
 import errors
 
+imprimir=False
 if len(sys.argv) < 2:
-    print ("usage : cmm inputfile")
+    print ("usage : cmm [-debug] inputfile")
     raise SystemExit
 
 if len(sys.argv) == 3:
-    if sys.argv[1] == '-nocode':
-         mylexer.emit_code = 0
+    if sys.argv[1] == '-debug':
+        imprimir =  True;
     else:
          print ("Unknown option '%s'" % sys.argv[1])
          raise SystemExit
@@ -23,4 +24,5 @@ arquive = open(filename).read()
 
 grammar.parser.parse(arquive)
 
-print(grammar.escopo.all())          # Show parser object
+if imprimir:
+    print(grammar.var_global)          # Show parser object

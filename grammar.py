@@ -13,10 +13,12 @@ if "cmm" not in sys.argv[0]:
     print ("usage : cmm inputfile")
     raise SystemExit
 
+GLOBAL="GLOBAL"
+TMP="TMP"
+
 ############################################################################
 
-escopo = Escopo()
-
+var_global = Escopo(GLOBAL)
 
 ############################################################################
 
@@ -75,10 +77,13 @@ def p_variavel(t):
 
 def p_program(t):
     'program : sequence_declaration'
+    t[0]=t[1]
 
 def p_sequence_declaration(t):
     '''sequence_declaration : declaration sequence_declaration
                             | declaration'''
+
+    t[0]=var_global
 
 def p_declaration(t):
     '''declaration  : procedure
@@ -91,18 +96,21 @@ def p_var_declaration(t):
     '''var_Declaration : type sequence_var_Especification end'''
     tmp=t[2]
     for element in tmp:
-        tmp[element].type=t[1]
+        tmp[element].def_type(t[1])
+        var_global.add(tmp[element])
     t[0]=tmp
 
 def p_list_var_declaration(t):
     '''list_var_Declaration : var_Declaration list_var_Declaration
                             | empty'''
+    global var_global
     if(len(t)>2):
         if(t[2] is not None):
-            t[0]=t[1].update(t[2])
+            tmp=t[1]
+            tmp.update(t[2])
+            t[0]=tmp
         else:
             t[0]=t[1]
-
 
 def p_var_especification(t):
     '''var_Especification   : NAME LCOLC NUMBER RCOLC
@@ -153,14 +161,14 @@ def p_sequence_parametro(t):
 
 def p_procedure(t):
     '''procedure : NAME LPAREN list_parametro RPAREN LBRACE block RBRACE'''
-    p=Procedure(t[1], t[3], t[6])
-    escopo.add(p)
+    p=Procedure(t[1], t[3], Block(t[2],t[6][0],t[6][1]))
+    var_global.add(p)
     t[0]=p
 
 def p_function(t):
     '''function : type NAME LPAREN list_parametro RPAREN LBRACE block RBRACE'''
-    f=Function(t[2], t[1], t[4], t[7])
-    escopo.add(f)
+    f=Function(t[2], t[1], t[4],Block(t[2],t[7][0],t[7][1]))
+    var_global.add(f)
     t[0]=f
 
 ################################################################################
@@ -189,7 +197,7 @@ def p_define_expression_literal(t):
 
 def p_define_expression_var(t):
     'expression : variavel'
-    t[0]=escopo.show(t[1])
+    t[0]=var_global.show(t[1])
 
 def p_expression_logop(t):
     '''expression : expression MAIOR expression
@@ -239,7 +247,7 @@ def p_list_expression(t):
 def p_sequence_expression(t):
     '''sequence_expression : expression COMMA sequence_expression
                             | expression'''
-    t[0]= [t[1], t[3]] if (len(t)>2) else t[1]
+    t[0]= [t[1]] +t[3] if (len(t)>2) else [t[1]]
 
 def p_assign(p):
     '''assignment :   variavel ASSIGN expression
@@ -251,19 +259,19 @@ def p_assign(p):
     '''
 
     if  p[2] ==  '=':
-        escopo.change(p[1], p[3])
+        var_global.change(p[1], p[3])
     elif p[2] == '%=':
-        escopo.change(p[1], escopo.show(p[1]) /p[3])
+        var_global.change(p[1], var_global.show(p[1]) /p[3])
     elif p[2] == '+=':
-        escopo.change(p[1], escopo.show(p[1]) +p[3])
+        var_global.change(p[1], var_global.show(p[1]) +p[3])
     elif p[2] == '-=':
-        escopo.change(p[1], escopo.show(p[1])-p[3])
+        var_global.change(p[1], var_global.show(p[1])-p[3])
     elif p[2] == '*=':
-        escopo.change(p[1], escopo.show(p[1]) *p[3])
+        var_global.change(p[1], var_global.show(p[1]) *p[3])
     elif p[2] == '/=':
-        escopo.change(p[1], escopo.show(p[1])/p[3])
+        var_global.change(p[1], var_global.show(p[1])/p[3])
     else: errors.unknownSignal(t)
-    p[0]=escopo.show(p[1])
+    p[0]=var_global.show(p[1])
 
 #########################################################################
 #statements
@@ -318,7 +326,10 @@ def p_statement_subCall(t):
 #I/O
 def p_statement_write(t):
     '''write_statement : WRITE  list_expression '''
-    print (t[2])
+    tmp=""
+    for element in t[2]:
+        tmp+=str(element)+" "
+    print ("In Exectution: "+tmp)
 
 
 def p_statement_read(t):
@@ -330,8 +341,9 @@ def p_statement_read(t):
 
 def p_block(t):
     '''block : list_var_Declaration list_statement'''
-    print(t[1])
-    t[0]=Block(t[1], t[2])
+    t[0]=[t[1],t[2]]
+
+
 
 ###############################################################
 #errors

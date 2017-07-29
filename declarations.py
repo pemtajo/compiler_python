@@ -4,26 +4,34 @@ class Escopo(object):
     """docstring for Escopo."""
     names = {}
 
-    def __init__(self):
+    def __init__(self, name):
         super(Escopo, self).__init__()
-
+        self.name=name
 
     def add(self, value):
-        for element in value:
+        try: #if value is iterable
+            for element in value:
+                try:
+                    self.names[element] #has a declaration with this name
+                    print("Same Name Variavel Error "+ str(element))
+                    return
+                except:
+                    self.names[element]= value[element]
+        except:
             try:
-                self.names[element] #has a declaration with this name
-                print("Same Name Variavel Error")
+
+                self.names[value.name] #has a declaration with this name
+                print("Same Name Variavel Error2" + str(element))
                 return
             except:
-                self.names[element]= value[element]
-
+                self.names[value.name]= value
 
     def show(self, d):
         try:
-            self.names[d].value
+            return self.names[d].value
         except:
             for element in self.names:
-                if isinstance(element, Procedure) or isinstance(element, Function):
+
                     try:
                         return self.names[element].escopo.show(d)
                     except:
@@ -35,6 +43,17 @@ class Escopo(object):
 
     def all(self):
         return self.names
+
+    def __str__(self):
+        tmp=self.name+"\n"
+        tmp+="____________________________________________________________\n"
+        for element in self.names:
+            tmp+=str(self.names[element])+"\n"
+
+        return tmp
+
+    def name(self):
+        return str(self.names)
 
 
 class Declaration(object):
@@ -62,7 +81,12 @@ class Variable(Declaration):
         self.name = name
         self.type = type
         self.value = value
-        if(value==None):
+        self.def_type(type)
+
+
+    def def_type(self, type):
+        self.type=type
+        if(self.value==None):
             if(type=="int"):
                 self.value=0
             elif(type=="bool"):
@@ -71,7 +95,7 @@ class Variable(Declaration):
                 self.value=''
 
     def __str__(self):
-        return self.name+ " " + str(self.type) + " " + str(self.value)
+        return "Variable: "+self.name+ "\n\tType: " + str(self.type) + "\n\tValue: " + str(self.value)
 
     def __repr__(self):
         return "|"+self.name+ "," + str(self.type) + "," + str(self.value)+"|"
@@ -86,7 +110,9 @@ class Function(Declaration):
         self.block=block
 
     def __str__(self):
-        return self.name+ " " + self.type + " " + str(self.parametros)
+        tmp="Function: "+self.name+ " \n\tType:" + self.type + "\n\tparametros:"
+        tmp+=str(self.parametros)+ " \n\t" +str(self.block)
+        return tmp
 
     def __repr__(self):
         return "|"+self.name+ "," + self.type + "," + str(self.parametros)+"|"
@@ -107,15 +133,15 @@ class Procedure(object):
 
 class Block(object):
     """docstring for Block."""
-    def __init__(self, variaveis, statements):
+    def __init__(self, pai, variaveis, statements):
         super(Block, self).__init__()
-        print(variaveis)
-        self.escopo=Escopo()
-        escopo.add(variaveis)
+        self.pai=pai
+        tmp=None
+        self.escopo=tmp
         self.statements=statements
 
     def __str__(self):
-        return self.escopo+ " " +str(self.statements)
+        return "Block "+self.pai+": "+str(self.escopo)+ " \n\tStatements:"+ str(self.statements)
 
     def __repr__(self):
-        return "|"+self.escopo+ "," + str(self.statements)+"|"
+        return "|"+self.escopo+ " \n\tStatements:\n"+ str(self.statements)+"|"
