@@ -8,29 +8,27 @@ class Escopo(object):
         super(Escopo, self).__init__()
 
 
-    def add(self,name, value):
-        try:
-            self.names[name] #has a declaration with this name
-            print("Same Name Variavel Error")
-            return
-        except:
-            self.names[name]= value
+    def add(self, value):
+        for element in value:
+            try:
+                self.names[element] #has a declaration with this name
+                print("Same Name Variavel Error")
+                return
+            except:
+                self.names[element]= value[element]
 
-
-    def addVariable(self, name, type, value):
-        v=Variable(name, type, value)
-        self.add(name, v)
-
-    def addFunction(self, name, type, parametros):
-        f=Function(name, type, parametros)
-        self.add(name, f)
-
-    def addProcedure(self, name, parametros):
-        p=Procedure(name, parametros)
-        self.add(name, p)
 
     def show(self, d):
-        return self.names[d].value
+        try:
+            self.names[d].value
+        except:
+            for element in self.names:
+                if isinstance(element, Procedure) or isinstance(element, Function):
+                    try:
+                        return self.names[element].escopo.show(d)
+                    except:
+                        continue
+        return None
 
     def change(self, v, value):
         self.names[v].value=value
@@ -73,61 +71,51 @@ class Variable(Declaration):
                 self.value=''
 
     def __str__(self):
-        return self.name+ " " + self.type + " " + str(self.value)
+        return self.name+ " " + str(self.type) + " " + str(self.value)
 
     def __repr__(self):
-        return "|"+self.name+ "," + self.type + "," + str(self.value)+"|"
+        return "|"+self.name+ "," + str(self.type) + "," + str(self.value)+"|"
 
 class Function(Declaration):
     """docstring for Function."""
-<<<<<<< HEAD
-
-    def __init__(self, name, type, parametros):
-        super(Function, self).__init__()
-        self.name =name
-        self.type = type
-        self.parametros =parametros
-=======
-    def __init__(self, name, type, parametros):
+    def __init__(self, name, type, parametros, block):
         super(Function, self).__init__()
         self.name = name
         self.type = type
         self.parametros = parametros
->>>>>>> d4f8ee9f901ee2daa6e83dbc7fbcb5aae0b3f56d
+        self.block=block
 
     def __str__(self):
         return self.name+ " " + self.type + " " + str(self.parametros)
 
     def __repr__(self):
-<<<<<<< HEAD
-        return "["+self.name+ "," + self.type + "," + str(self.parametros)+"]"
-
-class Procedure(Declaration):
-    """docstring for Procedure."""
-    def __init__(self, name, parametros):
-        super(Procedure, self).__init__()
-        self.name =name
-        self.parametros =parametros
-
-    def __str__(self):
-        return self.name+ " " + str(self.parametros)
-
-    def __repr__(self):
-        return "["+self.name+ "," + str(self.parametros)+"]"
-=======
         return "|"+self.name+ "," + self.type + "," + str(self.parametros)+"|"
 
 class Procedure(object):
     """docstring for Procedure."""
-    def __init__(self, name, parametros):
+    def __init__(self, name, parametros, block):
         super(Procedure, self).__init__()
         self.name = name
         self.parametros=parametros
-
+        self.block=block
 
     def __str__(self):
         return self.name+ " " +str(self.parametros)
 
     def __repr__(self):
         return "|"+self.name+ "," + str(self.parametros)+"|"
->>>>>>> d4f8ee9f901ee2daa6e83dbc7fbcb5aae0b3f56d
+
+class Block(object):
+    """docstring for Block."""
+    def __init__(self, variaveis, statements):
+        super(Block, self).__init__()
+        print(variaveis)
+        self.escopo=Escopo()
+        escopo.add(variaveis)
+        self.statements=statements
+
+    def __str__(self):
+        return self.escopo+ " " +str(self.statements)
+
+    def __repr__(self):
+        return "|"+self.escopo+ "," + str(self.statements)+"|"

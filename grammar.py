@@ -89,23 +89,32 @@ def p_declaration(t):
 
 def p_var_declaration(t):
     '''var_Declaration : type sequence_var_Especification end'''
-    escopo.addVariable(t[2][0], t[1], t[2][1])
-    t[0]=[t[1], t[2]]
+    tmp=t[2]
+    for element in tmp:
+        tmp[element].type=t[1]
+    t[0]=tmp
 
-def p_list_var_declaration(p):
+def p_list_var_declaration(t):
     '''list_var_Declaration : var_Declaration list_var_Declaration
                             | empty'''
+    if(len(t)>2):
+        if(t[2] is not None):
+            t[0]=t[1].update(t[2])
+        else:
+            t[0]=t[1]
+
 
 def p_var_especification(t):
     '''var_Especification   : NAME LCOLC NUMBER RCOLC
                             | NAME ASSIGN expression
                             | NAME
                             | NAME LCOLC NUMBER RCOLC ASSIGN LBRACE sequence_literal RBRACE'''
-
     if(len(t)==2):
-        t[0]=[t[1], None]
+        t[0]=Variable(t[1], None, None)
+
     elif(len(t)==4):
-        t[0]=[t[1], t[3]]
+        t[0]=Variable(t[1], None, t[3])
+
 
 
 def p_sequence_var_Especification(t):
@@ -113,10 +122,11 @@ def p_sequence_var_Especification(t):
                                     | var_Especification
     '''
     if len(t)<4:
-         t[0] = t[1]
+        tmp={}
     else:
-        t[0]=t[0]+t[1]
-
+        tmp=t[3]
+    tmp[t[1].name]=t[1]
+    t[0]=tmp
 ###############################################################
 
 
@@ -143,13 +153,16 @@ def p_sequence_parametro(t):
 
 def p_procedure(t):
     '''procedure : NAME LPAREN list_parametro RPAREN LBRACE block RBRACE'''
-    escopo.addProcedure(t[1], t[3])
-    t[0]=[t[1], t[4]]
+    p=Procedure(t[1], t[3], t[6])
+    escopo.add(p)
+    t[0]=p
 
 def p_function(t):
     '''function : type NAME LPAREN list_parametro RPAREN LBRACE block RBRACE'''
-    escopo.addFunction(t[2], t[1], t[4])
-    t[0]=[t[1], t[2], t[4]]
+    f=Function(t[2], t[1], t[4], t[7])
+    escopo.add(f)
+    t[0]=f
+
 ################################################################################
 #expression
 
@@ -305,7 +318,7 @@ def p_statement_subCall(t):
 #I/O
 def p_statement_write(t):
     '''write_statement : WRITE  list_expression '''
-    print (t[3])
+    print (t[2])
 
 
 def p_statement_read(t):
@@ -317,7 +330,8 @@ def p_statement_read(t):
 
 def p_block(t):
     '''block : list_var_Declaration list_statement'''
-    t[0]=[t[1], t[2]]
+    print(t[1])
+    t[0]=Block(t[1], t[2])
 
 ###############################################################
 #errors
